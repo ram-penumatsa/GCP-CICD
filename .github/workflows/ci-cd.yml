@@ -1,0 +1,39 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/flask-gke-demo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Auth to GCP
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t $IMAGE:$GITHUB_SHA .
+        docker push $IMAGE:$GITHUB_SHA
+
+    - name: Set up GKE credentials
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        cluster_name: ${{ secrets.GKE_CLUSTER_NAME }}
+        location: ${{ secrets.GKE_ZONE }}
+
+    - name: Deploy to GKE
+      run: |
+        sed "s|IMAGE_PLACEHOLDER|$IMAGE:$GITHUB_SHA|" k8s/deployment.yaml | kubectl apply -f - 
