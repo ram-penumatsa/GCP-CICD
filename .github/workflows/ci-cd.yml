@@ -6,7 +6,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/flask-gke-demo
+  IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-repo/flask-gke-demo
 
 jobs:
   deploy:
