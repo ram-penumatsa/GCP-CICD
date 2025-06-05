@@ -6,7 +6,7 @@ on:
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-  IMAGE: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-repo/flask-gke-demo
+  IMAGE: us-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/flask-gke-demo/flask-gke-demo
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
     - name: Configure Docker
-      run: gcloud auth configure-docker
+      run: gcloud auth configure-docker us-docker.pkg.dev
 
     - name: Build and push Docker image
       run: |
